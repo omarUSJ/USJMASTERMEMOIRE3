@@ -11,20 +11,23 @@ public class InitiateTransactionRequestAPI {
 
 		private String automatic;
 		
-		private String Percentage;
+		private String percentage;
+		
+		private String email;
 		
 		public InitiateTransactionRequestAPI() {
 			super();
 		}
 
 		public InitiateTransactionRequestAPI(String customerId, String accountId, String accountCurrency,
-				String automatic, String percentage) {
+				String automatic, String percentage, String email) {
 			super();
 			this.customerId = customerId;
 			this.accountId = accountId;
 			this.accountCurrency = accountCurrency;
 			this.automatic = automatic;
-			Percentage = percentage;
+			this.percentage = percentage;
+			this.email = email;
 		}
 
 
@@ -68,19 +71,31 @@ public class InitiateTransactionRequestAPI {
 		}
 
 		public String getPercentage() {
-			return Percentage;
+			return percentage;
 		}
 
 		public void setPercentage(String percentage) {
-			Percentage = percentage;
+			this.percentage = percentage;
+		}
+
+		
+		
+		public String getEmail() {
+			return email;
+		}
+
+		public void setEmail(String email) {
+			this.email = email;
 		}
 
 		@Override
 		public String toString() {
 			return "InitiateTransactionRequestAPI [customerId=" + customerId + ", accountId=" + accountId
-					+ ", accountCurrency=" + accountCurrency + ", automatic=" + automatic + ", Percentage=" + Percentage
-					+ "]";
+					+ ", accountCurrency=" + accountCurrency + ", automatic=" + automatic + ", percentage=" + percentage
+					+ ", email=" + email + "]";
 		}
+
+		
 
 	}
 

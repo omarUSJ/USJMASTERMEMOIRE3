@@ -6,7 +6,7 @@ public class CoreBankingResponse {
 	    private String account;
 	    private String amount;
 	    private String amountCurrency;
-	    private String pourcentage;
+	    private String Pourcentage;
 	    
 		public String getToken() {
 			return token;
@@ -36,15 +36,15 @@ public class CoreBankingResponse {
 		
 		
 		public String getPourcentage() {
-			return pourcentage;
+			return Pourcentage;
 		}
-		public void setPourcentage(String pourcentage) {
-			this.pourcentage = pourcentage;
+		public void setPourcentage(String Pourcentage) {
+			this.Pourcentage = Pourcentage;
 		}
 		@Override
 		public String toString() {
 			return "CoreBankingResponse [token=" + token + ", account=" + account + ", amount=" + amount
-					+ ", amountCurrency=" + amountCurrency + ", pourcentage=" + pourcentage + "]";
+					+ ", amountCurrency=" + amountCurrency + ", Pourcentage=" + Pourcentage + "]";
 		}
 	
 		

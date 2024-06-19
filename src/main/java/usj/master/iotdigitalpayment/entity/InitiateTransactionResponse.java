@@ -5,7 +5,8 @@ import java.time.LocalDate;
 import javax.persistence.*;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+
 
 
 @Entity
@@ -14,7 +15,7 @@ public class InitiateTransactionResponse {
 	
 		@Id
 		@Column(name="transaction_Id")
-		private int transactionId;
+		private long transactionId;
 
 		@Column(name="customer_id")
 		private String customerId;
@@ -25,7 +26,7 @@ public class InitiateTransactionResponse {
 		@Column(name="account_currency")
 		private String accountCurrency;
 
-		@JsonSerialize(using = LocalDateTimeSerializer.class)
+		@JsonSerialize(using = LocalDateSerializer.class)
 		@Column(name="transaction_date_time")
 		private LocalDate transactionDateTime;
 	
@@ -42,12 +43,18 @@ public class InitiateTransactionResponse {
 		private String Percentage;
 		
 		
+		@Column(name="Email")
+		private String email;
 
-
-
-		public InitiateTransactionResponse(int transactionId, String customerId, String accountId,
+		@Column(name="mail_sent")
+		private Boolean  mailSent = false;
+		
+		@Column(name="active")
+		private Boolean  active = true;
+		
+		public InitiateTransactionResponse(long transactionId, String customerId, String accountId,
 				String accountCurrency, LocalDate transactionDateTime, String token, String refresh_token,
-				String automatic, String percentage) {
+				String automatic, String percentage, String email, Boolean  mailSent, Boolean active) {
 			super();
 			this.transactionId = transactionId;
 			this.customerId = customerId;
@@ -57,18 +64,21 @@ public class InitiateTransactionResponse {
 			this.token = token;
 			this.refresh_token = refresh_token;
 			this.automatic = automatic;
-			Percentage = percentage;
+			this.Percentage = percentage;
+			this.email = email;
+			this.mailSent= mailSent;
+			this.active = active;
 		}
 
 
 
-		public int getTransactionId() {
+		public long getTransactionId() {
 			return transactionId;
 		}
 
 
 
-		public void setTransactionId(int transactionId) {
+		public void setTransactionId(long transactionId) {
 			this.transactionId = transactionId;
 		}
 
@@ -159,7 +169,49 @@ public class InitiateTransactionResponse {
 
 
 		public void setPercentage(String percentage) {
-			Percentage = percentage;
+			this.Percentage = percentage;
+		}
+
+
+
+		public String getEmail() {
+			return email;
+		}
+
+
+
+		public void setEmail(String email) {
+			this.email = email;
+		}
+
+
+
+		public Boolean  isMailSent() {
+			return mailSent;
+		}
+
+
+
+		public void setMailSent(Boolean  mailSent) {
+			this.mailSent = mailSent;
+		}
+
+
+
+		public Boolean getActive() {
+			return active;
+		}
+
+
+
+		public void setActive(Boolean active) {
+			this.active = active;
+		}
+
+
+
+		public Boolean getMailSent() {
+			return mailSent;
 		}
 
 
@@ -169,8 +221,15 @@ public class InitiateTransactionResponse {
 			return "InitiateTransactionResponse [transactionId=" + transactionId + ", customerId=" + customerId
 					+ ", accountId=" + accountId + ", accountCurrency=" + accountCurrency + ", transactionDateTime="
 					+ transactionDateTime + ", token=" + token + ", refresh_token=" + refresh_token + ", automatic="
-					+ automatic + ", Percentage=" + Percentage + "]";
+					+ automatic + ", Percentage=" + Percentage + ", email=" + email + ", mailSent=" + mailSent
+					+ ", active=" + active + "]";
 		}
+
+
+
+
+
+	
 
 
 

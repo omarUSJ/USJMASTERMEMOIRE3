@@ -1,6 +1,8 @@
 package usj.master.iotdigitalpayment.controller;
 
-import java.time.LocalDate;  
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +26,7 @@ import usj.master.iotdigitalpayment.entity.InitiateTransactionRequestAPI;
 import usj.master.iotdigitalpayment.entity.InitiateTransactionResponse;
 import usj.master.iotdigitalpayment.entity.RefreshToken;
 import usj.master.iotdigitalpayment.security.jwt.JwtUtils;
-
+import usj.master.iotdigitalpayment.service.EncryptionService;
 import usj.master.iotdigitalpayment.service.RefreshTokenService;
  
 
@@ -47,10 +49,11 @@ public class TransactionController {
 	@Autowired
 	RefreshTokenService refreshTokenService;
 	 
-
+	 @Autowired
+	 private EncryptionService encryptionService;
+	
 	private final RestTemplate restTemplate;
-	
-	
+		
 	@Autowired
 	public TransactionController(RestTemplate restTemplate) {
 		
@@ -61,17 +64,26 @@ public class TransactionController {
 	@PostMapping("/initiateTransactionRequest")
 	public ResponseEntity<?> initiateTransactionRequestAPI (@RequestBody InitiateTransactionRequestAPI initiateTransactionRequestAPI) {
 
+		LocalDateTime localDateTime = LocalDateTime.now();
+		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyMMddhhmmss");
+		String formattedDate = localDateTime.format(dateTimeFormatter);
+		
 		try {
 		log.info("TransactionController::initiateTransaction: " + initiateTransactionRequestAPI.toString());
 		InitiateTransactionRequest initiateTransactionRequest = new InitiateTransactionRequest();
 
+//		initiateTransactionRequest.setCustomerId(encryptionService.encrypt(initiateTransactionRequestAPI.getCustomerId()));
+//		initiateTransactionRequest.setAccountId(encryptionService.encrypt(initiateTransactionRequestAPI.getAccountId()));
+//		initiateTransactionRequest.setAccountCurrency(encryptionService.encrypt(initiateTransactionRequestAPI.getAccountCurrency()));
 		initiateTransactionRequest.setCustomerId(initiateTransactionRequestAPI.getCustomerId());
 		initiateTransactionRequest.setAccountId(initiateTransactionRequestAPI.getAccountId());
 		initiateTransactionRequest.setAccountCurrency(initiateTransactionRequestAPI.getAccountCurrency());
+		initiateTransactionRequest.setAutomatic(initiateTransactionRequestAPI.getAutomatic());		
+		initiateTransactionRequest.setPercentage(initiateTransactionRequestAPI.getPercentage());
+		initiateTransactionRequest.setEmail(initiateTransactionRequestAPI.getEmail());
 
-		
-		initiateTransactionRequest.setTransactionId(5);
-		
+		initiateTransactionRequest.setTransactionId(Long.parseLong(formattedDate));
+	
 		initiateTransactionRequest = initiateTransactionRepository.save(initiateTransactionRequest);
 
 		String jwt = jwtUtils.generateJwtToken(initiateTransactionRequest.getCustomerId().toString());
@@ -82,24 +94,30 @@ public class TransactionController {
 
         // Add 30 days to today's date
         LocalDate expiryDate = today.plusDays(30);
-    
+            
 		InitiateTransactionResponse initiateTransactionResponse = 
 				new InitiateTransactionResponse(
 						initiateTransactionRequest.getTransactionId(),
-						initiateTransactionRequest.getCustomerId(), initiateTransactionRequest.getAccountId(),
+						initiateTransactionRequest.getCustomerId(), 
+						initiateTransactionRequest.getAccountId(),
 						initiateTransactionRequest.getAccountCurrency(), 
 						expiryDate, 
 						 jwt, 
 						 refreshToken.toString(),
 						 initiateTransactionRequest.getAutomatic(),
-						 initiateTransactionRequest.getPercentage());
+						 initiateTransactionRequest.getPercentage(),
+						 initiateTransactionRequest.getEmail(),
+						 false,
+						 true
+						 );
 		
 		initiateTransactionResponse = initiateTransactionResponseRepository.save(initiateTransactionResponse);
 		
 		log.info("TransactionController::initiateTransaction: Created ");
 
-		callExternalAPIOk(initiateTransactionResponse);
+		//callExternalAPIOk(initiateTransactionResponse);
 		
+	//	log.info("TransactionController::initiateTransaction: after call ");
 		//callExternalAPINo(initiateTransactionResponse);
 		//return ResponseEntity.status(HttpStatus.NOT_FOUND)
 		//.body("NOT_FOUND");
@@ -108,7 +126,7 @@ public class TransactionController {
 				.body("OK");
 		
 		}catch(Exception ex) {
-			log.info("TransactionController::initiateTransaction: failed ");
+			log.info("TransactionController::initiateTransaction: failed " +ex.getMessage());
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body(ex.getStackTrace());
 		
@@ -120,12 +138,13 @@ public class TransactionController {
 		
 		log.info("TransactionController::Call Core Banking: ");
 		
-        String url = "https://masterusj.free.beeceptor.com/corebanking";
+        String url = "https://masterusj.free.beeceptor.com/corebanking/ok";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         HttpEntity<InitiateTransactionResponse> requestEntity = new HttpEntity<>(requestObject, headers);
-
+        log.info("TransactionController::Call Core Banking: before calling ");
+        
         // Make the POST request and get the response
         CoreBankingResponse responseObject = restTemplate.postForObject(url, requestEntity, CoreBankingResponse.class);
 
@@ -137,9 +156,9 @@ public class TransactionController {
 	@PostMapping("https://masterusj.free.beeceptor.com/corebanking/no")
     public CoreBankingResponse callExternalAPINo(@RequestBody InitiateTransactionResponse requestObject) {
 		
-		log.info("TransactionController::Call Core Banking: ");
+		log.info("TransactionController::Call Core Banking no: ");
 		
-        String url = "https://masterusj.free.beeceptor.com/corebanking";
+        String url = "https://masterusj.free.beeceptor.com/corebanking/no";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 

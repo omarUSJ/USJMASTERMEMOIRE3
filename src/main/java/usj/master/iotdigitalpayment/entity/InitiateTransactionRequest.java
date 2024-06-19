@@ -1,6 +1,7 @@
 package usj.master.iotdigitalpayment.entity;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,7 +19,7 @@ public class InitiateTransactionRequest {
 		@Id
 		//@GeneratedValue(strategy = GenerationType.AUTO)
 		@Column(name="transaction_id")
-		private int transactionId;
+		private long transactionId;
 
 		@Column(name="customer_id")
 		private String customerId;
@@ -32,7 +33,7 @@ public class InitiateTransactionRequest {
 		@JsonSerialize(using = LocalDateTimeSerializer.class)
 	//	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 		@Column(name="transaction_date_time")
-		private LocalDateTime transactionDateTime;
+		private LocalDate transactionDate;
 		
 		@Column(name="automatic")
 		private String automatic;
@@ -40,28 +41,33 @@ public class InitiateTransactionRequest {
 		@Column(name="Percentage")
 		private String Percentage;
 
-		public InitiateTransactionRequest(int transactionId, String customerId, String accountId,
-				String accountCurrency, LocalDateTime transactionDateTime, String automatic, String percentage) {
+		@Column(name="Email")
+		private String email;
+
+		public InitiateTransactionRequest(long transactionId, String customerId, String accountId,
+				String accountCurrency, LocalDate transactionDate, String automatic, 
+				String percentage, String email) {
 			super();
 			this.transactionId = transactionId;
 			this.customerId = customerId;
 			this.accountId = accountId;
 			this.accountCurrency = accountCurrency;
-			this.transactionDateTime = transactionDateTime;
+			this.transactionDate = transactionDate;
 			this.automatic = automatic;
 			this.Percentage = percentage;
+			this.email = email;
 		}
 
-		public int getTransactionId() {
+		public long getTransactionId() {
 			return transactionId;
 		}
 
-		public void setTransactionId(int transactionId) {
+		public void setTransactionId(long transactionId) {
 			this.transactionId = transactionId;
 		}
 
-		public void setTransactionDateTime(LocalDateTime transactionDateTime) {
-			this.transactionDateTime = transactionDateTime;
+		public void setTransactionDate(LocalDate transactionDate) {
+			this.transactionDate = transactionDate;
 		}
 
 		public InitiateTransactionRequest() {
@@ -92,12 +98,12 @@ public class InitiateTransactionRequest {
 			this.accountCurrency = accountCurrency;
 		}
 
-		public LocalDateTime getTransactionDateTime() {
-			return transactionDateTime;
+		public LocalDate getTransactionDate() {
+			return transactionDate;
 		}
 
 		public void setTransactionDateTime() {
-			this.transactionDateTime = LocalDateTime.now();
+			this.transactionDate = LocalDate.now();
 		}
 
 		public String getAutomatic() {
@@ -116,12 +122,20 @@ public class InitiateTransactionRequest {
 			Percentage = percentage;
 		}
 
+		public String getEmail() {
+			return email;
+		}
+
+		public void setEmail(String email) {
+			this.email = email;
+		}
+
 		@Override
 		public String toString() {
 			return "InitiateTransactionRequest [transactionId=" + transactionId + ", customerId=" + customerId
-					+ ", accountId=" + accountId + ", accountCurrency=" + accountCurrency + ", transactionDateTime="
-					+ transactionDateTime + ", automatic=" + automatic + ", Percentage=" + Percentage + "]";
+					+ ", accountId=" + accountId + ", accountCurrency=" + accountCurrency + ", transactionDate="
+					+ transactionDate + ", automatic=" + automatic + ", Percentage=" + Percentage + ", email=" + email
+					+ "]";
 		}
-
 	}
 

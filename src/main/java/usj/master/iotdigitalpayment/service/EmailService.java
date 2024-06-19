@@ -12,15 +12,10 @@ public class EmailService {
     private JavaMailSender mailSender;
 
     public void sendEmail(String to, String subject, String body) {
-    	System.out.println("start email...");
         SimpleMailMessage message = new SimpleMailMessage();
-        System.out.println("to : "+ to);
         message.setTo(to);
-        System.out.println("sub: "+subject);
         message.setSubject(subject);
-        System.out.println("body: "+body);
         message.setText(body);
-
         mailSender.send(message);
     }
 	
